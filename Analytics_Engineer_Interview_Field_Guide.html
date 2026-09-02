@@ -1,0 +1,2729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics Engineer — Interview Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0B0F17;
+    --bg-panel:#121826;
+    --bg-panel-alt:#182034;
+    --bg-raised:#1C2538;
+    --border:#293450;
+    --border-soft:#20293D;
+    --text:#E7ECF5;
+    --text-muted:#8D9AB5;
+    --text-faint:#5D6A85;
+    --teal:#35C6B0;
+    --gold:#E8A94B;
+    --rose:#E2637A;
+    --blue:#5AB8E8;
+    --radius:10px;
+    --serif-none: none;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 700px at 15% -10%, rgba(53,198,176,0.08), transparent 60%),
+      radial-gradient(1000px 600px at 100% 0%, rgba(232,169,75,0.06), transparent 55%),
+      var(--bg-deep);
+    color:var(--text);
+    font-family:"IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background: rgba(53,198,176,.35); }
+
+  a{ color:var(--teal); }
+
+  code, .mono{ font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  /* ---------- Layout shell ---------- */
+  .app{
+    display:grid;
+    grid-template-columns: 300px minmax(0,1fr);
+    min-height:100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    position:sticky; top:0; align-self:start;
+    height:100vh;
+    border-right:1px solid var(--border-soft);
+    background:linear-gradient(180deg, var(--bg-panel), var(--bg-deep));
+    padding:22px 18px 18px;
+    display:flex; flex-direction:column; gap:16px;
+    overflow-y:auto;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    padding-bottom:14px; border-bottom:1px solid var(--border-soft);
+  }
+  .brand-mark{
+    width:34px; height:34px; border-radius:8px; flex:none;
+    background:linear-gradient(145deg, var(--teal), var(--blue));
+    display:grid; place-items:center;
+    font-family:"IBM Plex Mono"; font-weight:600; font-size:13px; color:#08131A;
+  }
+  .brand-text h1{ font-size:14.5px; margin:0; font-weight:600; letter-spacing:.01em; }
+  .brand-text p{ margin:2px 0 0; font-size:11.5px; color:var(--text-faint); font-family:"IBM Plex Mono"; }
+
+  .search-wrap{ position:relative; }
+  .search-wrap input{
+    width:100%; background:var(--bg-panel-alt); border:1px solid var(--border);
+    color:var(--text); border-radius:8px; padding:10px 12px 10px 34px;
+    font-size:13px; font-family:"IBM Plex Sans"; outline:none;
+    transition:border-color .15s ease;
+  }
+  .search-wrap input:focus{ border-color:var(--teal); }
+  .search-wrap svg{ position:absolute; left:11px; top:50%; transform:translateY(-50%); opacity:.55; }
+  .search-wrap input::placeholder{ color:var(--text-faint); }
+
+  .progress-block{
+    background:var(--bg-panel-alt); border:1px solid var(--border-soft); border-radius:10px;
+    padding:12px 14px;
+  }
+  .progress-block .p-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
+  .progress-block .p-label{ font-size:11.5px; color:var(--text-muted); text-transform:none; }
+  .progress-block .p-count{ font-family:"IBM Plex Mono"; font-size:13px; color:var(--teal); }
+  .progress-track{ height:6px; border-radius:99px; background:var(--bg-raised); overflow:hidden; }
+  .progress-fill{ height:100%; width:0%; border-radius:99px;
+    background:linear-gradient(90deg, var(--teal), var(--gold)); transition:width .3s ease; }
+
+  .nav-scroll{ display:flex; flex-direction:column; gap:6px; overflow-y:auto; padding-right:2px;}
+  .nav-title{ font-size:11px; color:var(--text-faint); font-family:"IBM Plex Mono"; margin:4px 0 2px; }
+  .nav-chip{
+    display:flex; align-items:center; gap:9px;
+    background:transparent; border:1px solid transparent; color:var(--text-muted);
+    text-align:left; padding:7px 9px; border-radius:8px; cursor:pointer;
+    font-size:12.5px; font-family:"IBM Plex Sans"; width:100%;
+    transition:background .12s ease, color .12s ease, border-color .12s ease;
+  }
+  .nav-chip:hover{ background:var(--bg-panel-alt); color:var(--text); }
+  .nav-chip.active{ background:var(--bg-raised); border-color:var(--border); color:var(--text); }
+  .nav-dot{ width:8px; height:8px; border-radius:50%; background:var(--accent); flex:none; }
+  .nav-count{ margin-left:auto; font-family:"IBM Plex Mono"; font-size:10.5px; color:var(--text-faint); }
+  .nav-chip.active .nav-count{ color:var(--text-muted); }
+
+  .side-actions{ display:flex; gap:8px; }
+  .side-actions button{
+    flex:1; background:var(--bg-panel-alt); border:1px solid var(--border-soft); color:var(--text-muted);
+    padding:8px 6px; border-radius:8px; font-size:11.5px; cursor:pointer; font-family:"IBM Plex Sans";
+  }
+  .side-actions button:hover{ color:var(--text); border-color:var(--border); }
+
+  .sidebar-foot{ margin-top:auto; padding-top:12px; border-top:1px solid var(--border-soft); }
+  .sidebar-foot p{ font-size:10.5px; color:var(--text-faint); margin:0; line-height:1.5; }
+
+  /* ---------- Main ---------- */
+  main{ min-width:0; }
+
+  .hero{
+    padding:64px 56px 40px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .hero-eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:"IBM Plex Mono"; font-size:11.5px; color:var(--teal);
+    background:rgba(53,198,176,.08); border:1px solid rgba(53,198,176,.25);
+    padding:5px 10px; border-radius:99px; margin-bottom:22px;
+  }
+  .hero h1{
+    font-size:40px; line-height:1.12; margin:0 0 14px; font-weight:600; max-width:16ch;
+    letter-spacing:-0.01em;
+  }
+  .hero p.lede{ font-size:16px; color:var(--text-muted); max-width:62ch; margin:0 0 26px; }
+  .stack-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;}
+  .stack-chip{
+    font-family:"IBM Plex Mono"; font-size:12px; padding:6px 11px; border-radius:7px;
+    background:var(--bg-panel-alt); border:1px solid var(--border-soft); color:var(--text-muted);
+  }
+
+  /* Pipeline diagram */
+  .pipeline{
+    margin-top:34px;
+    display:grid; grid-template-columns:repeat(6, 1fr); gap:0;
+    background:var(--bg-panel);
+    border:1px solid var(--border-soft); border-radius:12px;
+    overflow:hidden;
+  }
+  .pipe-step{
+    padding:18px 14px; text-align:center; position:relative;
+    border-right:1px solid var(--border-soft);
+  }
+  .pipe-step:last-child{ border-right:none; }
+  .pipe-step .pipe-icon{
+    width:30px; height:30px; margin:0 auto 10px; border-radius:8px;
+    display:grid; place-items:center; font-family:"IBM Plex Mono"; font-size:12px; font-weight:600;
+  }
+  .pipe-step h4{ font-size:12.5px; margin:0 0 3px; font-weight:600; }
+  .pipe-step p{ font-size:10.5px; color:var(--text-faint); margin:0; line-height:1.4; }
+  .pipe-step::after{
+    content:"→"; position:absolute; right:-11px; top:24px; color:var(--text-faint); font-size:13px;
+    z-index:2;
+  }
+  .pipe-step:last-child::after{ content:none; }
+  @media (max-width: 900px){
+    .pipeline{ grid-template-columns:repeat(3,1fr); }
+    .pipe-step:nth-child(3)::after, .pipe-step:last-child::after{ content:none; }
+  }
+
+  /* Quick reference */
+  .quickref{
+    padding:36px 56px; border-bottom:1px solid var(--border-soft);
+    background:var(--bg-panel);
+  }
+  .quickref h2{ font-size:13px; text-transform:none; font-family:"IBM Plex Mono"; color:var(--text-muted); margin:0 0 4px; font-weight:500;}
+  .quickref .sub{ font-size:20px; font-weight:600; margin:0 0 20px; }
+  .qr-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+  @media (max-width: 900px){ .qr-grid{ grid-template-columns:1fr; } }
+  .qr-card{
+    background:var(--bg-panel-alt); border:1px solid var(--border-soft); border-radius:10px;
+    padding:16px 18px; border-top:3px solid var(--accent);
+  }
+  .qr-card h3{ font-size:14px; margin:0 0 6px; font-family:"IBM Plex Mono"; }
+  .qr-card p{ font-size:12.5px; color:var(--text-muted); margin:0; }
+
+  /* Content wrap */
+  .content{ padding:8px 56px 90px; }
+  @media (max-width: 720px){
+    .hero{ padding:44px 22px 30px;}
+    .quickref{ padding:28px 22px; }
+    .content{ padding:8px 22px 70px; }
+  }
+
+  .cat-section{ padding-top:44px; scroll-margin-top:20px; }
+  .cat-heading{ border-left:3px solid var(--accent); padding-left:14px; margin-bottom:18px; }
+  .cat-heading h2{ font-size:19px; margin:0 0 3px; font-weight:600; }
+  .cat-heading p{ font-size:13px; color:var(--text-faint); margin:0; }
+
+  /* ---------- QA cards ---------- */
+  .qa{
+    border:1px solid var(--border-soft); border-radius:10px; background:var(--bg-panel);
+    margin-bottom:10px; overflow:hidden;
+    transition:border-color .15s ease;
+  }
+  .qa.reviewed{ border-color:rgba(53,198,176,.35); }
+  .qa-head{
+    width:100%; display:flex; align-items:center; gap:14px;
+    background:transparent; border:none; cursor:pointer; text-align:left;
+    padding:14px 16px; color:var(--text);
+  }
+  .qa-num{ font-family:"IBM Plex Mono"; font-size:12px; color:var(--text-faint); flex:none; width:22px; }
+  .qa-title{ font-size:14.5px; font-weight:500; flex:1; }
+  .qa-check{
+    width:16px; height:16px; border-radius:5px; border:1.5px solid var(--border); flex:none;
+    transition:background .15s ease, border-color .15s ease; position:relative;
+  }
+  .qa.reviewed .qa-check{ background:var(--teal); border-color:var(--teal); }
+  .qa.reviewed .qa-check::after{
+    content:""; position:absolute; left:4px; top:1px; width:4px; height:8px;
+    border:solid #08131A; border-width:0 2px 2px 0; transform:rotate(40deg);
+  }
+  .qa-chevron{ flex:none; width:9px; height:9px; border-right:1.5px solid var(--text-faint); border-bottom:1.5px solid var(--text-faint);
+    transform:rotate(45deg); transition:transform .18s ease; margin-right:2px;}
+  .qa.open .qa-chevron{ transform:rotate(-135deg); }
+
+  .qa-body{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .25s ease; }
+  .qa-body > .qa-content{ overflow:hidden; }
+  .qa.open .qa-body{ grid-template-rows:1fr; }
+
+  .qa-content{ padding:0 18px 18px 52px; font-size:14px; color:var(--text); }
+  .qa-content p{ margin:0 0 12px; color:#D6DCE9; }
+  .qa-content h3{ font-size:14.5px; margin:18px 0 8px; color:var(--gold); font-weight:600; }
+  .qa-content ul, .qa-content ol{ margin:0 0 12px; padding-left:20px; color:#D6DCE9; }
+  .qa-content li{ margin-bottom:4px; }
+  .qa-content strong{ color:var(--text); }
+
+  .qa-content blockquote{
+    margin:0 0 14px; padding:10px 14px; border-left:3px solid var(--teal);
+    background:rgba(53,198,176,.06); border-radius:0 8px 8px 0; color:#C9E9E2;
+    font-size:13.5px;
+  }
+  .qa-content blockquote p{ margin:0; color:inherit; }
+
+  .code-block{
+    margin:0 0 14px; border:1px solid var(--border-soft); border-radius:8px; overflow:hidden;
+    background:#0D131F;
+  }
+  .code-label{
+    font-family:"IBM Plex Mono"; font-size:10px; letter-spacing:.04em; color:var(--text-faint);
+    padding:6px 12px; border-bottom:1px solid var(--border-soft); background:var(--bg-panel-alt);
+  }
+  .code-block pre{ margin:0; padding:12px 14px; overflow-x:auto; }
+  .code-block code{ font-size:12.5px; color:#A9E8D8; line-height:1.6; white-space:pre; }
+
+  .qa-content table{ width:100%; border-collapse:collapse; margin:0 0 14px; font-size:13px; }
+  .qa-content th, .qa-content td{ border:1px solid var(--border-soft); padding:8px 10px; text-align:left; }
+  .qa-content th{ background:var(--bg-panel-alt); color:var(--text-muted); font-family:"IBM Plex Mono"; font-size:11.5px; font-weight:500; }
+  .qa-content td{ color:#D6DCE9; }
+
+  /* Closing principle section */
+  .closing{
+    margin:60px 0 0; padding:34px; border-radius:14px;
+    background:linear-gradient(160deg, var(--bg-panel-alt), var(--bg-panel));
+    border:1px solid var(--border-soft);
+  }
+  .closing h2{ font-size:20px; margin:0 0 6px; }
+  .closing > p.lede{ color:var(--text-muted); font-size:13.5px; margin:0 0 22px; max-width:60ch; }
+  .steps5{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+  @media (max-width:900px){ .steps5{ grid-template-columns:repeat(2,1fr);} }
+  .step5{ background:var(--bg-panel); border:1px solid var(--border-soft); border-radius:10px; padding:14px; }
+  .step5 .n{ font-family:"IBM Plex Mono"; font-size:11px; color:var(--gold); margin-bottom:6px;}
+  .step5 h4{ margin:0 0 4px; font-size:13px; }
+  .step5 p{ margin:0; font-size:12px; color:var(--text-faint); }
+
+  .no-results{ display:none; padding:40px 0; text-align:center; color:var(--text-faint); font-size:13.5px; }
+  .cat-section.hidden, .qa.hidden{ display:none; }
+
+  footer.pagefoot{
+    margin-top:70px; padding-top:22px; border-top:1px solid var(--border-soft);
+    color:var(--text-faint); font-size:11.5px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+
+  @media (max-width: 820px){
+    .app{ grid-template-columns:1fr; }
+    .sidebar{ position:relative; height:auto; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">AE</div>
+      <div class="brand-text">
+        <h1>Interview Field Guide</h1>
+        <p>68 Q&amp;A · Analytics Engineer</p>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Search questions & answers…">
+    </div>
+
+    <div class="progress-block">
+      <div class="p-row">
+        <span class="p-label">Reviewed</span>
+        <span class="p-count"><span id="reviewedCount">0</span> / 68</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="side-actions">
+      <button id="expandAllBtn">Expand all</button>
+      <button id="collapseAllBtn">Collapse all</button>
+    </div>
+
+    <div class="nav-title">JUMP TO TOPIC</div>
+    <div class="nav-scroll" id="navScroll">
+      <button class="nav-chip active" data-cat="all" style="--accent:#5D6A85"><span class="nav-dot"></span>All topics<span class="nav-count">68</span></button>
+      <button class="nav-chip" data-cat="role" style="--accent:#7FA8D9"><span class="nav-dot"></span>Role & Landscape<span class="nav-count">2</span></button>
+<button class="nav-chip" data-cat="warehouse" style="--accent:#5AB8E8"><span class="nav-dot"></span>Warehouse & Compute<span class="nav-count">4</span></button>
+<button class="nav-chip" data-cat="ingest" style="--accent:#4FC3A1"><span class="nav-dot"></span>Ingestion & Orchestration<span class="nav-count">5</span></button>
+<button class="nav-chip" data-cat="elt" style="--accent:#3FBF9E"><span class="nav-dot"></span>ELT Concepts<span class="nav-count">2</span></button>
+<button class="nav-chip" data-cat="dbt" style="--accent:#35C6B0"><span class="nav-dot"></span>dbt Fundamentals<span class="nav-count">10</span></button>
+<button class="nav-chip" data-cat="layers" style="--accent:#7FCB9B"><span class="nav-dot"></span>Modeling Layers<span class="nav-count">4</span></button>
+<button class="nav-chip" data-cat="dimmodel" style="--accent:#B7C95A"><span class="nav-dot"></span>Dimensional Modeling<span class="nav-count">10</span></button>
+<button class="nav-chip" data-cat="quality" style="--accent:#E0C24A"><span class="nav-dot"></span>Data Quality & Testing<span class="nav-count">4</span></button>
+<button class="nav-chip" data-cat="perf" style="--accent:#E8A94B"><span class="nav-dot"></span>Performance & Materialization<span class="nav-count">4</span></button>
+<button class="nav-chip" data-cat="gitops" style="--accent:#E08C4F"><span class="nav-dot"></span>Version Control & Deploy<span class="nav-count">3</span></button>
+<button class="nav-chip" data-cat="debug" style="--accent:#E2637A"><span class="nav-dot"></span>Debugging & Troubleshooting<span class="nav-count">7</span></button>
+<button class="nav-chip" data-cat="semantic" style="--accent:#D9698B"><span class="nav-dot"></span>Semantic Layer & BI<span class="nav-count">3</span></button>
+<button class="nav-chip" data-cat="sql" style="--accent:#B478C9"><span class="nav-dot"></span>SQL Practice<span class="nav-count">4</span></button>
+<button class="nav-chip" data-cat="strategy" style="--accent:#8C8FE0"><span class="nav-dot"></span>Interview Strategy<span class="nav-count">6</span></button>
+    </div>
+
+    <div class="sidebar-foot">
+      <p>Tip: click any question to expand it, or check it off once you can explain it out loud without notes.</p>
+    </div>
+  </aside>
+
+  <main>
+    <section class="hero">
+      <div class="hero-eyebrow">◆ ANALYTICS ENGINEER · INTERVIEW PREP</div>
+      <h1>From Tableau developer to Analytics Engineer, one layer at a time.</h1>
+      <p class="lede">A practical interview field guide covering the modern ELT stack — Snowflake, dbt, Fivetran, Airflow, dimensional modeling, data quality, and the SQL patterns interviewers actually ask for. Grounded in the same layered thinking you already use in Tableau: source → transform → trusted dataset → dashboard.</p>
+      <div class="stack-row">
+        <span class="stack-chip">SQL</span><span class="stack-chip">dbt</span><span class="stack-chip">Snowflake</span>
+        <span class="stack-chip">Data Modeling</span><span class="stack-chip">Git</span><span class="stack-chip">Airflow</span>
+        <span class="stack-chip">Fivetran</span><span class="stack-chip">Tableau</span>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipe-step"><div class="pipe-icon" style="background:rgba(90,184,232,.15); color:#5AB8E8;">S</div><h4>Sources</h4><p>Salesforce, APIs, apps</p></div>
+        <div class="pipe-step"><div class="pipe-icon" style="background:rgba(79,195,161,.15); color:#4FC3A1;">F</div><h4>Fivetran</h4><p>Managed ingestion</p></div>
+        <div class="pipe-step"><div class="pipe-icon" style="background:rgba(53,198,176,.15); color:#35C6B0;">SF</div><h4>Snowflake</h4><p>Storage + compute</p></div>
+        <div class="pipe-step"><div class="pipe-icon" style="background:rgba(183,201,90,.15); color:#B7C95A;">dbt</div><h4>dbt</h4><p>Transform + model</p></div>
+        <div class="pipe-step"><div class="pipe-icon" style="background:rgba(232,169,75,.15); color:#E8A94B;">M</div><h4>Marts</h4><p>Facts &amp; dimensions</p></div>
+        <div class="pipe-step"><div class="pipe-icon" style="background:rgba(226,99,122,.15); color:#E2637A;">T</div><h4>Tableau</h4><p>Visualize &amp; decide</p></div>
+      </div>
+    </section>
+
+    <section class="quickref">
+      <h2>QUICK REFERENCE</h2>
+      <p class="sub">The stack in one sentence each</p>
+      <div class="qr-grid">
+        <div class="qr-card" style="--accent:#5AB8E8;"><h3>Snowflake</h3><p>Cloud data warehouse/platform where analytical data is stored and processed.</p></div>
+        <div class="qr-card" style="--accent:#4FC3A1;"><h3>Fivetran</h3><p>Managed ingestion tool that moves data from operational sources into the warehouse.</p></div>
+        <div class="qr-card" style="--accent:#35C6B0;"><h3>dbt</h3><p>Framework for building, testing, documenting, and versioning SQL transformations in the warehouse.</p></div>
+        <div class="qr-card" style="--accent:#B7C95A;"><h3>Airflow</h3><p>Orchestration platform that schedules and sequences data workflows and their dependencies.</p></div>
+        <div class="qr-card" style="--accent:#E8A94B;"><h3>Git</h3><p>Version control system for managing and collaborating on transformation code.</p></div>
+        <div class="qr-card" style="--accent:#E2637A;"><h3>Tableau</h3><p>BI layer that consumes trusted analytical datasets and delivers insight to the business.</p></div>
+      </div>
+    </section>
+
+    <div class="content">
+      
+  <section class="cat-section" id="cat-role" data-cat="role">
+    <div class="cat-heading" style="--accent:#7FA8D9">
+      <h2>Role & Landscape</h2>
+      <p>Where the Analytics Engineer sits in the data team</p>
+    </div>
+    
+    <article class="qa" data-cat="role" data-num="1" id="q1">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">01</span>
+        <span class="qa-title">What is an Analytics Engineer?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>Answer</h3>
+<p>An Analytics Engineer sits between traditional data engineering and analytics.</p>
+<p>The main responsibility is to take raw data from different sources and transform it into <strong>clean, reliable, well-modeled datasets</strong> that analysts and BI tools can use.</p>
+<p>Typically, an Analytics Engineer works heavily with:</p>
+<ul>
+<li>SQL</li>
+<li>dbt</li>
+<li>Data warehouses such as Snowflake</li>
+<li>Data modeling</li>
+<li>Data quality testing</li>
+<li>Documentation</li>
+<li>Git</li>
+<li>BI tools</li>
+</ul>
+<p>A typical flow is:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Data Sources
+     ↓
+Fivetran / ingestion
+     ↓
+Snowflake
+     ↓
+dbt
+     ↓
+Staging
+     ↓
+Intermediate
+     ↓
+Fact &amp; Dimension Models
+     ↓
+Tableau / BI
+</code></pre></div>
+<h3>Interview version</h3>
+<blockquote>
+<p>"An Analytics Engineer focuses on transforming raw warehouse data into trusted, analytics-ready datasets. I would typically use SQL and dbt for transformation and modeling, Snowflake as the warehouse, Git for version control, and BI tools such as Tableau for consumption."</p>
+</blockquote>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="role" data-num="2" id="q2">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">02</span>
+        <span class="qa-title">What is the difference between a Data Engineer, Analytics Engineer, and Data Analyst?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Primary responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data Engineer</td>
+<td>Build and maintain data pipelines/infrastructure</td>
+</tr>
+<tr>
+<td>Analytics Engineer</td>
+<td>Transform and model data for analytics</td>
+</tr>
+<tr>
+<td>Data Analyst</td>
+<td>Analyze data and provide business insights</td>
+</tr>
+</tbody>
+</table>
+<h3>Example</h3>
+<p>Suppose Salesforce contains opportunity data.</p>
+<p><strong>Data Engineer:</strong></p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Salesforce
+    ↓
+Extract
+    ↓
+Load
+    ↓
+Snowflake
+</code></pre></div>
+<p><strong>Analytics Engineer:</strong></p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Raw Opportunity
+       ↓
+Clean
+       ↓
+Join Account + User
+       ↓
+Apply business logic
+       ↓
+fct_opportunity
+</code></pre></div>
+<p><strong>Data Analyst:</strong></p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">fct_opportunity
+       ↓
+Analyze conversion
+       ↓
+Build report
+       ↓
+Business recommendation
+</code></pre></div>
+<h3>Interview version</h3>
+<blockquote>
+<p>"The boundaries can overlap, but generally the Data Engineer focuses on getting reliable data into the platform, the Analytics Engineer transforms and models that data for analytics, and the Data Analyst uses the curated data to answer business questions."</p>
+</blockquote>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-warehouse" data-cat="warehouse">
+    <div class="cat-heading" style="--accent:#5AB8E8">
+      <h2>Warehouse & Compute</h2>
+      <p>Snowflake, storage vs. compute, views vs. tables</p>
+    </div>
+    
+    <article class="qa" data-cat="warehouse" data-num="3" id="q3">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">03</span>
+        <span class="qa-title">What is a data warehouse?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>Answer</h3>
+<p>A data warehouse is a centralized system designed to store and analyze large amounts of structured data.</p>
+<p>Examples include:</p>
+<ul>
+<li>Snowflake</li>
+<li>BigQuery</li>
+<li>Amazon Redshift</li>
+<li>Databricks SQL Warehouse</li>
+</ul>
+<p>A warehouse is different from an operational database.</p>
+<p>An operational database is usually optimized for applications and transactions.</p>
+<p>A data warehouse is optimized for:</p>
+<ul>
+<li>Analytics</li>
+<li>Aggregations</li>
+<li>Reporting</li>
+<li>Business intelligence</li>
+<li>Large analytical queries</li>
+</ul>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="warehouse" data-num="4" id="q4">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">04</span>
+        <span class="qa-title">What is Snowflake?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>Answer</h3>
+<p>Snowflake is a cloud-based data platform/data warehouse used to store, process, and analyze data.</p>
+<p>One important concept is that Snowflake separates:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Storage
+   +
+Compute
+</code></pre></div>
+<p>Data is stored independently from the compute resources used to query it.</p>
+<p>Snowflake uses virtual warehouses for compute.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Snowflake
+│
+├── Database
+│    └── Schema
+│         ├── Tables
+│         ├── Views
+│         └── Models
+│
+└── Virtual Warehouse
+       └── Compute
+</code></pre></div>
+<h3>Interview version</h3>
+<blockquote>
+<p>"Snowflake is a cloud data warehouse and data platform. In an Analytics Engineering workflow, I would typically use Snowflake to store raw and transformed datasets and provide the compute required to execute SQL and dbt transformations."</p>
+</blockquote>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="warehouse" data-num="5" id="q5">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">05</span>
+        <span class="qa-title">Is Snowflake only used for storing data?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>Answer</h3>
+<p>No.</p>
+<p>This is an important distinction.</p>
+<p>Snowflake provides both <strong>storage and compute</strong>.</p>
+<p>For example, when dbt runs:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">SELECT
+    customer_id,
+    SUM(revenue)
+FROM orders
+GROUP BY customer_id
+</code></pre></div>
+<p>the SQL is executed by Snowflake's compute resources.</p>
+<p>So:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Snowflake
+├── Stores data
+├── Executes SQL
+├── Performs transformations
+├── Handles access control
+└── Provides analytical compute
+</code></pre></div>
+<p>dbt doesn't replace Snowflake.</p>
+<p>dbt generates/manages transformation logic, while Snowflake actually executes the SQL.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="warehouse" data-num="48" id="q48">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">48</span>
+        <span class="qa-title">What is the difference between a view and a table?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>View</h3>
+<p>A view stores the SQL definition rather than a separately materialized copy of the result.</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Query view
+    ↓
+Underlying data is queried
+</code></pre></div>
+<h3>Table</h3>
+<p>The transformed results are physically stored.</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Transformation
+      ↓
+Stored table
+</code></pre></div>
+<p>The choice depends on:</p>
+<ul>
+<li>Query frequency</li>
+<li>Transformation cost</li>
+<li>Data volume</li>
+<li>Performance requirements</li>
+</ul>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-ingest" data-cat="ingest">
+    <div class="cat-heading" style="--accent:#4FC3A1">
+      <h2>Ingestion & Orchestration</h2>
+      <p>Fivetran, Airflow, and moving data on schedule</p>
+    </div>
+    
+    <article class="qa" data-cat="ingest" data-num="11" id="q11">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">11</span>
+        <span class="qa-title">What does Fivetran do?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>Answer</h3>
+<p>Fivetran is primarily an <strong>automated data integration/ingestion tool</strong>.</p>
+<p>It extracts data from sources and loads it into destinations such as Snowflake.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Salesforce
+     ↓
+   Fivetran
+     ↓
+  Snowflake
+</code></pre></div>
+<p>Fivetran handles much of the operational complexity around:</p>
+<ul>
+<li>Connecting to sources</li>
+<li>Extracting data</li>
+<li>Loading data</li>
+<li>Incremental synchronization</li>
+<li>Schema changes</li>
+<li>Scheduling/syncing</li>
+</ul>
+<p>It is generally not where we put complex analytics business logic.</p>
+<p>That transformation is often handled by dbt.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="ingest" data-num="12" id="q12">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">12</span>
+        <span class="qa-title">Why can't we directly connect Salesforce to Snowflake?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Technically, you can build a custom integration.</p>
+<p>But the question is about <strong>why use Fivetran or another ingestion tool</strong>.</p>
+<p>A direct/custom connection means you have to manage things such as:</p>
+<ul>
+<li>Authentication</li>
+<li>API limits</li>
+<li>Incremental extraction</li>
+<li>Changed records</li>
+<li>Deleted records</li>
+<li>Schema changes</li>
+<li>Failures</li>
+<li>Retry logic</li>
+<li>Scheduling</li>
+<li>Monitoring</li>
+</ul>
+<p>Fivetran provides managed connectors that handle much of this complexity.</p>
+<p>So:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Salesforce → Fivetran → Snowflake
+</code></pre></div>
+<p>is usually much easier to maintain than building the entire ingestion framework yourself.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="ingest" data-num="13" id="q13">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">13</span>
+        <span class="qa-title">What does Airflow do?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>Answer</h3>
+<p>Airflow is primarily a <strong>workflow orchestration tool</strong>.</p>
+<p>It determines:</p>
+<blockquote>
+<p>What should run, when should it run, and in what order?</p>
+</blockquote>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Fivetran Load
+      ↓
+dbt Staging
+      ↓
+dbt Intermediate
+      ↓
+dbt Marts
+      ↓
+dbt Tests
+      ↓
+Tableau Refresh
+</code></pre></div>
+<p>Airflow can orchestrate these tasks and manage dependencies.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="ingest" data-num="14" id="q14">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">14</span>
+        <span class="qa-title">If dbt already exists, why do we need Airflow?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>This is another important interview question.</p>
+<p>dbt handles <strong>data transformation</strong>.</p>
+<p>Airflow handles <strong>workflow orchestration</strong>.</p>
+<h3>dbt asks:</h3>
+<blockquote>
+<p>How should data be transformed?</p>
+</blockquote>
+<h3>Airflow asks:</h3>
+<blockquote>
+<p>When should this process run and what should happen before/after it?</p>
+</blockquote>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Airflow
+   │
+   ├── Run ingestion
+   │
+   ├── Run dbt
+   │
+   ├── Run tests
+   │
+   └── Trigger downstream process
+</code></pre></div>
+<p>So:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Fivetran = Ingestion
+Snowflake = Warehouse/Compute
+dbt = Transformation
+Airflow = Orchestration
+Tableau = Visualization
+</code></pre></div>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="ingest" data-num="49" id="q49">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">49</span>
+        <span class="qa-title">How does Airflow fit into a modern data stack?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A typical architecture could be:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Salesforce
+    ↓
+Fivetran
+    ↓
+Snowflake
+    ↓
+dbt
+    ↓
+Analytics Marts
+    ↓
+Tableau
+</code></pre></div>
+<p>Airflow can orchestrate the workflow:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">             Airflow
+                │
+        ┌───────┼────────┐
+        ↓       ↓        ↓
+   Fivetran    dbt    Validation
+                │
+                ↓
+             Tableau
+</code></pre></div>
+<p>Airflow is not necessarily responsible for doing the transformation itself.</p>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-elt" data-cat="elt">
+    <div class="cat-heading" style="--accent:#3FBF9E">
+      <h2>ELT Concepts</h2>
+      <p>Extract-Load-Transform vs. traditional ETL</p>
+    </div>
+    
+    <article class="qa" data-cat="elt" data-num="9" id="q9">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">09</span>
+        <span class="qa-title">What is ELT?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>ELT means:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Extract
+Load
+Transform
+</code></pre></div>
+<p>The transformation happens <strong>after the data is loaded into the warehouse</strong>.</p>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Salesforce
+    ↓
+Extract
+    ↓
+Snowflake
+    ↓
+dbt
+    ↓
+Transform
+</code></pre></div>
+<p>This is different from traditional ETL:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Source
+  ↓
+Extract
+  ↓
+Transform
+  ↓
+Load
+  ↓
+Warehouse
+</code></pre></div>
+<p>Modern cloud warehouses make ELT very practical because they provide scalable compute for transformations.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="elt" data-num="10" id="q10">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">10</span>
+        <span class="qa-title">What is the difference between ETL and ELT?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <table>
+<thead>
+<tr>
+<th>ETL</th>
+<th>ELT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Extract</td>
+<td>Extract</td>
+</tr>
+<tr>
+<td>Transform</td>
+<td>Load</td>
+</tr>
+<tr>
+<td>Load</td>
+<td>Transform</td>
+</tr>
+<tr>
+<td>Transformation before warehouse</td>
+<td>Transformation inside warehouse</td>
+</tr>
+</tbody>
+</table>
+<h3>Example</h3>
+<p>Traditional:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Salesforce
+ ↓
+ETL tool
+ ↓
+Transform
+ ↓
+Snowflake
+</code></pre></div>
+<p>Modern:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Salesforce
+ ↓
+Fivetran
+ ↓
+Snowflake
+ ↓
+dbt
+</code></pre></div>
+<p>The second approach is ELT.</p>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-dbt" data-cat="dbt">
+    <div class="cat-heading" style="--accent:#35C6B0">
+      <h2>dbt Fundamentals</h2>
+      <p>Models, ref(), source(), macros, Jinja</p>
+    </div>
+    
+    <article class="qa" data-cat="dbt" data-num="6" id="q6">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">06</span>
+        <span class="qa-title">What is dbt?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>Answer</h3>
+<p>dbt stands for <strong>data build tool</strong>.</p>
+<p>dbt is primarily used to transform data inside a data warehouse using SQL.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Raw data
+   ↓
+Snowflake
+   ↓
+dbt
+   ↓
+Cleaned models
+   ↓
+Analytics-ready data
+</code></pre></div>
+<p>dbt helps with:</p>
+<ul>
+<li>SQL transformations</li>
+<li>Data modeling</li>
+<li>Testing</li>
+<li>Documentation</li>
+<li>Dependency management</li>
+<li>Lineage</li>
+<li>Version control</li>
+<li>Incremental processing</li>
+<li>Reusable macros</li>
+</ul>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dbt" data-num="7" id="q7">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">07</span>
+        <span class="qa-title">What does dbt actually do?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Suppose we write:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">SELECT
+    customer_id,
+    SUM(amount) AS total_sales
+FROM {{ ref('stg_orders') }}
+GROUP BY customer_id
+</code></pre></div>
+<p>dbt:</p>
+<ol>
+<li>Understands the dependency on <code>stg_orders</code></li>
+<li>Resolves <code>ref()</code></li>
+<li>Generates the appropriate SQL</li>
+<li>Sends the SQL to the warehouse</li>
+<li>Creates/updates the target model</li>
+<li>Can test the resulting data</li>
+<li>Tracks lineage and documentation</li>
+</ol>
+<p>The actual computation happens in Snowflake.</p>
+<h3>Simple mental model</h3>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">You write SQL
+      ↓
+dbt manages SQL
+      ↓
+Snowflake executes SQL
+      ↓
+Model is created
+</code></pre></div>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dbt" data-num="8" id="q8">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">08</span>
+        <span class="qa-title">Why do we need dbt if Snowflake can transform data?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>This is a very common interview question.</p>
+<h3>Answer</h3>
+<p>Snowflake can absolutely execute SQL transformations.</p>
+<p>The advantage of dbt is that it provides an <strong>engineering framework around those transformations</strong>.</p>
+<p>Without dbt, you might have many SQL scripts.</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">query1.sql
+query2.sql
+query3.sql
+query4.sql
+</code></pre></div>
+<p>With dbt, you get:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Models
+Tests
+Documentation
+Dependencies
+Lineage
+Macros
+Version control
+Deployment practices
+</code></pre></div>
+<p>So:</p>
+<blockquote>
+<p><strong>Snowflake provides the engine. dbt provides the transformation development framework.</strong></p>
+</blockquote>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dbt" data-num="15" id="q15">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">15</span>
+        <span class="qa-title">What is a dbt model?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A dbt model is generally a SQL file that represents a transformation.</p>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">models/
+└── staging/
+    └── stg_orders.sql
+</code></pre></div>
+<p>Inside:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">SELECT
+    order_id,
+    customer_id,
+    order_date,
+    amount
+FROM {{ source('sales', 'orders') }}
+</code></pre></div>
+<p>dbt uses this SQL to create a database object such as a view or table, depending on the materialization.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dbt" data-num="16" id="q16">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">16</span>
+        <span class="qa-title">What is `ref()` in dbt?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p><code>ref()</code> creates a dependency between dbt models.</p>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">SELECT *
+FROM {{ ref('stg_orders') }}
+</code></pre></div>
+<p>Instead of hardcoding:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">FROM analytics.staging.stg_orders
+</code></pre></div>
+<p>dbt understands the model dependency.</p>
+<p>It can therefore build:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">stg_orders
+     ↓
+int_orders
+     ↓
+fct_sales
+</code></pre></div>
+<p>This also creates lineage.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dbt" data-num="17" id="q17">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">17</span>
+        <span class="qa-title">What is `source()` in dbt?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p><code>source()</code> references raw/source data declared in dbt.</p>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">SELECT *
+FROM {{ source('salesforce', 'opportunity') }}
+</code></pre></div>
+<p>The source might be declared in YAML:</p>
+<div class="code-block"><div class="code-label">YAML</div><pre><code class="language-yaml">sources:
+  - name: salesforce
+    tables:
+      - name: opportunity
+</code></pre></div>
+<p>This allows dbt to track the relationship between source data and downstream models.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dbt" data-num="18" id="q18">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">18</span>
+        <span class="qa-title">What is the typical dbt project structure?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A common structure is:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">dbt_project/
+│
+├── models/
+│   ├── staging/
+│   ├── intermediate/
+│   └── marts/
+│
+├── macros/
+├── snapshots/
+├── seeds/
+├── tests/
+├── analyses/
+├── dbt_project.yml
+└── packages.yml
+</code></pre></div>
+<p>The exact structure can vary by organization.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dbt" data-num="36" id="q36">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">36</span>
+        <span class="qa-title">What is a dbt macro?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A macro is reusable logic written using Jinja.</p>
+<p>Instead of repeating the same SQL logic in many models, you can create a macro.</p>
+<p>Conceptually:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Macro
+   ↓
+Reusable SQL logic
+   ↓
+Multiple models
+</code></pre></div>
+<p>This helps reduce duplication and improve maintainability.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dbt" data-num="37" id="q37">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">37</span>
+        <span class="qa-title">What is Jinja in dbt?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Jinja is a templating language used by dbt to make SQL dynamic and reusable.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">{{ ref('stg_orders') }}
+</code></pre></div>
+<p>or:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">{% if target.name == 'prod' %}
+...
+{% endif %}
+</code></pre></div>
+<p>Jinja allows us to add programming-like capabilities around SQL.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dbt" data-num="52" id="q52">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">52</span>
+        <span class="qa-title">What is the difference between a source table and a dbt model?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>Source</h3>
+<p>Data that comes from an external system.</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Salesforce
+    ↓
+raw.opportunity
+</code></pre></div>
+<h3>dbt model</h3>
+<p>A transformation managed by dbt.</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">raw.opportunity
+       ↓
+stg_opportunity
+</code></pre></div>
+<p>So:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Source = input
+Model = transformation
+</code></pre></div>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-layers" data-cat="layers">
+    <div class="cat-heading" style="--accent:#7FCB9B">
+      <h2>Modeling Layers</h2>
+      <p>Staging, intermediate, and mart design</p>
+    </div>
+    
+    <article class="qa" data-cat="layers" data-num="19" id="q19">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">19</span>
+        <span class="qa-title">What is a staging model?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Staging models are generally close to the raw/source data.</p>
+<p>Typical responsibilities:</p>
+<ul>
+<li>Rename columns</li>
+<li>Standardize data types</li>
+<li>Clean obvious issues</li>
+<li>Normalize naming</li>
+<li>Basic transformations</li>
+</ul>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">raw_salesforce_opportunity
+            ↓
+stg_opportunity
+</code></pre></div>
+<p>A staging model should generally avoid heavy business logic.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="layers" data-num="20" id="q20">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">20</span>
+        <span class="qa-title">What is an intermediate model?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Intermediate models are used for more complex transformation logic.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">stg_orders
+stg_customers
+      ↓
+int_orders_enriched
+</code></pre></div>
+<p>The model might:</p>
+<ul>
+<li>Join datasets</li>
+<li>Apply business rules</li>
+<li>Calculate intermediate metrics</li>
+<li>Resolve complex transformations</li>
+</ul>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="layers" data-num="21" id="q21">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">21</span>
+        <span class="qa-title">What is a mart?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A mart is an analytics-facing model designed around a business process or subject area.</p>
+<p>Examples:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">fct_sales
+fct_orders
+fct_opportunities
+
+dim_customer
+dim_product
+dim_sales_rep
+</code></pre></div>
+<p>These are the models that analysts and BI tools often consume.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="layers" data-num="46" id="q46">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">46</span>
+        <span class="qa-title">How would you design a dbt project?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>I would generally separate models into layers.</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">models/
+│
+├── staging/
+│   ├── stg_customer.sql
+│   ├── stg_orders.sql
+│   └── stg_products.sql
+│
+├── intermediate/
+│   ├── int_orders_enriched.sql
+│   └── int_customer_orders.sql
+│
+└── marts/
+    ├── fct_sales.sql
+    ├── dim_customer.sql
+    ├── dim_product.sql
+    └── dim_date.sql
+</code></pre></div>
+<p>The goal is to separate:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Source cleanup
+      ↓
+Transformation logic
+      ↓
+Business-facing models
+</code></pre></div>
+<p>This improves maintainability.</p>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-dimmodel" data-cat="dimmodel">
+    <div class="cat-heading" style="--accent:#B7C95A">
+      <h2>Dimensional Modeling</h2>
+      <p>Grain, star schema, keys, SCDs, cardinality</p>
+    </div>
+    
+    <article class="qa" data-cat="dimmodel" data-num="22" id="q22">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">22</span>
+        <span class="qa-title">What is a fact table?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A fact table stores measurable business events.</p>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">fct_sales
+----------------
+order_id
+customer_id
+product_id
+date_id
+quantity
+revenue
+discount
+</code></pre></div>
+<p>Typical measures include:</p>
+<ul>
+<li>Revenue</li>
+<li>Quantity</li>
+<li>Cost</li>
+<li>Profit</li>
+<li>Discount</li>
+</ul>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dimmodel" data-num="23" id="q23">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">23</span>
+        <span class="qa-title">What is a dimension table?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A dimension table contains descriptive information about business entities.</p>
+<p>Examples:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">dim_customer
+dim_product
+dim_sales_rep
+dim_date
+</code></pre></div>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">dim_customer
+
+customer_id
+customer_name
+city
+country
+segment
+</code></pre></div>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dimmodel" data-num="24" id="q24">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">24</span>
+        <span class="qa-title">What is a star schema?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A star schema contains a central fact table connected to dimension tables.</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">             dim_customer
+                  │
+                  │
+dim_product ── fct_sales ── dim_date
+                  │
+                  │
+             dim_sales_rep
+</code></pre></div>
+<p>The fact table contains events/measures.</p>
+<p>Dimensions contain descriptive attributes.</p>
+<p>This structure is commonly used for analytics and BI.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dimmodel" data-num="25" id="q25">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">25</span>
+        <span class="qa-title">What is grain?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>This is one of the MOST important Analytics Engineer concepts.</h3>
+<p>Grain means:</p>
+<blockquote>
+<p><strong>What does one row represent?</strong></p>
+</blockquote>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">fct_sales
+</code></pre></div>
+<p>might have the grain:</p>
+<blockquote>
+<p>One row = one order line.</p>
+</blockquote>
+<p>Another table could have:</p>
+<blockquote>
+<p>One row = one customer per month.</p>
+</blockquote>
+<p>These are completely different grains.</p>
+<p>Before building a model, you should clearly define its grain.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dimmodel" data-num="26" id="q26">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">26</span>
+        <span class="qa-title">Why is grain important?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Suppose we have:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Orders
+Order 101 → ₹1,000
+Order 102 → ₹2,000
+</code></pre></div>
+<p>And customer table:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Customer A
+Customer B
+</code></pre></div>
+<p>If we accidentally join tables with different grains, we may duplicate records.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Sales
+Customer
+Target
+</code></pre></div>
+<p>If <code>Target</code> contains one target per sales rep per month but we join it directly to order-level data, the target can be repeated across every order.</p>
+<p>This can produce incorrect totals.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>Always identify the grain before joining datasets.</strong></p>
+</blockquote>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dimmodel" data-num="27" id="q27">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">27</span>
+        <span class="qa-title">What is cardinality?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Cardinality describes the relationship between records.</p>
+<p>Common relationships:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">1 : 1
+1 : many
+many : 1
+many : many
+</code></pre></div>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Customer → Orders
+</code></pre></div>
+<p>Usually:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">1 customer
+    ↓
+many orders
+</code></pre></div>
+<p>So this is a:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">1 : many
+</code></pre></div>
+<p>relationship.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dimmodel" data-num="28" id="q28">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">28</span>
+        <span class="qa-title">What is a surrogate key?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A surrogate key is an artificial/system-generated key used to uniquely identify a record.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">customer_sk
+</code></pre></div>
+<p>could be:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">10001
+10002
+10003
+</code></pre></div>
+<p>instead of using the source's natural identifier.</p>
+<p>Surrogate keys are particularly useful in dimensional modeling and slowly changing dimensions.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dimmodel" data-num="29" id="q29">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">29</span>
+        <span class="qa-title">What is a natural key?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A natural key is an identifier that naturally comes from the business/source system.</p>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">customer_id = C10025
+</code></pre></div>
+<p>A Salesforce record ID can act as a natural/business-source identifier.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dimmodel" data-num="30" id="q30">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">30</span>
+        <span class="qa-title">What is a slowly changing dimension?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Slowly Changing Dimensions, or SCDs, describe how changes to dimensional attributes are handled over time.</p>
+<p>Example:</p>
+<p>A customer changes city:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Before:
+Customer A → Delhi
+
+After:
+Customer A → Mumbai
+</code></pre></div>
+<h3>Type 1</h3>
+<p>Overwrite the old value.</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Customer A → Mumbai
+</code></pre></div>
+<p>History is not preserved.</p>
+<h3>Type 2</h3>
+<p>Preserve history.</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Customer A | Delhi  | 2025-01-01 | 2026-05-10
+Customer A | Mumbai | 2026-05-11 | NULL
+</code></pre></div>
+<p>Type 2 is useful when historical reporting matters.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="dimmodel" data-num="63" id="q63">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">63</span>
+        <span class="qa-title">What is the most important concept when joining data?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>Grain.</h3>
+<p>Before joining:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Table A
+</code></pre></div>
+<p>and:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Table B
+</code></pre></div>
+<p>I would ask:</p>
+<blockquote>
+<p>What does one row represent in A?</p>
+<p>What does one row represent in B?</p>
+<p>What is the expected relationship?</p>
+</blockquote>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Orders
+1 row = 1 order
+
+Targets
+1 row = 1 sales rep + month
+</code></pre></div>
+<p>Joining them directly on:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">sales_rep
+</code></pre></div>
+<p>could create duplicates.</p>
+<p>The join might need:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">sales_rep
++
+month
+</code></pre></div>
+<p>depending on the business requirement.</p>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-quality" data-cat="quality">
+    <div class="cat-heading" style="--accent:#E0C24A">
+      <h2>Data Quality & Testing</h2>
+      <p>dbt tests, NULLs, contracts, trust</p>
+    </div>
+    
+    <article class="qa" data-cat="quality" data-num="31" id="q31">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">31</span>
+        <span class="qa-title">What are dbt tests?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>dbt tests help validate data quality.</p>
+<p>Common tests include:</p>
+<h3><code>unique</code></h3>
+<p>Checks that values are unique.</p>
+<h3><code>not_null</code></h3>
+<p>Checks that a field doesn't contain NULL.</p>
+<h3><code>accepted_values</code></h3>
+<p>Checks that values belong to an expected set.</p>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">stage ∈
+New
+Qualified
+Closed Won
+Closed Lost
+</code></pre></div>
+<h3><code>relationships</code></h3>
+<p>Checks referential integrity.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">fct_orders.customer_id
+        ↓
+dim_customer.customer_id
+</code></pre></div>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="quality" data-num="32" id="q32">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">32</span>
+        <span class="qa-title">Why are data quality tests important?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Imagine a Tableau dashboard shows:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Revenue = ₹10M
+</code></pre></div>
+<p>But the underlying data contains duplicate orders.</p>
+<p>The dashboard may look perfectly fine while showing incorrect information.</p>
+<p>Tests allow us to catch these problems earlier.</p>
+<p>A good Analytics Engineer doesn't just build transformations.</p>
+<p>They build <strong>trusted transformations</strong>.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="quality" data-num="44" id="q44">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">44</span>
+        <span class="qa-title">How would you handle NULL values?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>It depends on the business meaning.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">COALESCE(revenue, 0)
+</code></pre></div>
+<p>can replace NULL revenue with zero.</p>
+<p>But I wouldn't automatically convert every NULL to zero.</p>
+<p>NULL can mean:</p>
+<ul>
+<li>Unknown</li>
+<li>Missing</li>
+<li>Not applicable</li>
+<li>Not yet available</li>
+</ul>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">discount = NULL
+</code></pre></div>
+<p>does not necessarily mean:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">discount = 0
+</code></pre></div>
+<p>The business meaning should be understood first.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="quality" data-num="54" id="q54">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">54</span>
+        <span class="qa-title">What is a data contract?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A data contract defines expectations about data between producers and consumers.</p>
+<p>It can specify things such as:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Column names
+Data types
+Required fields
+Allowed values
+Expected grain
+Schema
+</code></pre></div>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">order_id → required
+amount → numeric
+order_date → date
+</code></pre></div>
+<p>Contracts reduce unexpected downstream breakage.</p>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-perf" data-cat="perf">
+    <div class="cat-heading" style="--accent:#E8A94B">
+      <h2>Performance & Materialization</h2>
+      <p>Incremental models, views, snapshots, tuning</p>
+    </div>
+    
+    <article class="qa" data-cat="perf" data-num="33" id="q33">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">33</span>
+        <span class="qa-title">What is an incremental model in dbt?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>An incremental model processes only new or changed records instead of rebuilding the entire table every time.</p>
+<p>Suppose we have:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">100 million rows
+</code></pre></div>
+<p>and only:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">100,000 new rows
+</code></pre></div>
+<p>arrived today.</p>
+<p>Instead of processing all 100 million rows, an incremental model can process the relevant new/changed data.</p>
+<p>This can significantly improve performance and reduce compute costs.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="perf" data-num="34" id="q34">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">34</span>
+        <span class="qa-title">When would you use a view vs table vs incremental model?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>View</h3>
+<p>Useful when:</p>
+<ul>
+<li>Data is relatively small</li>
+<li>Transformation is inexpensive</li>
+<li>You don't need physically stored results</li>
+</ul>
+<h3>Table</h3>
+<p>Useful when:</p>
+<ul>
+<li>Query performance matters</li>
+<li>Transformation is expensive</li>
+<li>Data doesn't need to be rebuilt constantly</li>
+</ul>
+<h3>Incremental</h3>
+<p>Useful when:</p>
+<ul>
+<li>Dataset is large</li>
+<li>New/changed data can be identified</li>
+<li>Full refresh is expensive</li>
+</ul>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="perf" data-num="35" id="q35">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">35</span>
+        <span class="qa-title">What is a dbt snapshot?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A snapshot is used to track changes to records over time.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Customer status
+
+2026-01-01 → Active
+2026-05-01 → Inactive
+</code></pre></div>
+<p>Snapshots are particularly useful when you need historical versions of mutable source records.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="perf" data-num="47" id="q47">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">47</span>
+        <span class="qa-title">How would you optimize a slow dbt model?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>I would first identify where the time is being spent.</p>
+<p>Possible areas:</p>
+<h3>1. Reduce unnecessary data</h3>
+<p>Don't process columns or rows that aren't needed.</p>
+<h3>2. Filter earlier</h3>
+<p>Push filters closer to the source where appropriate.</p>
+<h3>3. Review joins</h3>
+<p>Look for:</p>
+<ul>
+<li>Many-to-many joins</li>
+<li>Large intermediate datasets</li>
+<li>Missing join conditions</li>
+</ul>
+<h3>4. Check materialization</h3>
+<p>A model might be better as a table or incremental model instead of a view.</p>
+<h3>5. Check Snowflake compute</h3>
+<p>The warehouse size and workload may need investigation.</p>
+<h3>6. Review query profile</h3>
+<p>Use Snowflake's query information/profile to identify expensive operations.</p>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-gitops" data-cat="gitops">
+    <div class="cat-heading" style="--accent:#E08C4F">
+      <h2>Version Control & Deploy</h2>
+      <p>Git, CI/CD, schema change management</p>
+    </div>
+    
+    <article class="qa" data-cat="gitops" data-num="38" id="q38">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">38</span>
+        <span class="qa-title">What is Git and why does an Analytics Engineer need it?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Git is a version control system.</p>
+<p>It allows developers to:</p>
+<ul>
+<li>Track changes</li>
+<li>Create branches</li>
+<li>Collaborate</li>
+<li>Review code</li>
+<li>Revert changes</li>
+<li>Merge work</li>
+</ul>
+<p>A typical workflow:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">main
+ │
+ └── feature/new-sales-model
+          ↓
+       Commit
+          ↓
+       Pull Request
+          ↓
+       Code Review
+          ↓
+       Merge
+</code></pre></div>
+<p>For dbt projects, Git is extremely important because transformation logic is code.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="gitops" data-num="39" id="q39">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">39</span>
+        <span class="qa-title">What is CI/CD in dbt?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>CI/CD means Continuous Integration and Continuous Deployment.</p>
+<p>For example, when someone creates a pull request:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Developer
+    ↓
+Git branch
+    ↓
+Pull Request
+    ↓
+CI pipeline
+    ↓
+dbt build / tests
+    ↓
+Code review
+    ↓
+Merge
+</code></pre></div>
+<p>This helps prevent broken transformations from reaching production.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="gitops" data-num="53" id="q53">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">53</span>
+        <span class="qa-title">How would you handle a source schema change?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>For example, Salesforce changes:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">customer_name
+</code></pre></div>
+<p>to:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">customer_full_name
+</code></pre></div>
+<p>I would first determine:</p>
+<ol>
+<li>What changed?</li>
+<li>Is it expected?</li>
+<li>Which downstream models depend on the field?</li>
+<li>Which dashboards are affected?</li>
+</ol>
+<p>Then update the relevant staging model and downstream logic.</p>
+<p>I would run:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">dbt build
+</code></pre></div>
+<p>or the appropriate targeted models/tests and validate downstream outputs.</p>
+<p>This is where lineage and tests become very valuable.</p>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-debug" data-cat="debug">
+    <div class="cat-heading" style="--accent:#E2637A">
+      <h2>Debugging & Troubleshooting</h2>
+      <p>Duplicate data, mismatches, root-causing numbers</p>
+    </div>
+    
+    <article class="qa" data-cat="debug" data-num="40" id="q40">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">40</span>
+        <span class="qa-title">How would you troubleshoot a Tableau number that doesn't match the source?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>I would not immediately change the Tableau calculation.</p>
+<p>I'd investigate systematically.</p>
+<h3>Step 1 — Check the Tableau calculation</h3>
+<p>Make sure the aggregation is correct:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">SUM
+AVG
+COUNT
+COUNTD
+</code></pre></div>
+<h3>Step 2 — Check filters</h3>
+<p>Look for:</p>
+<ul>
+<li>Context filters</li>
+<li>Dimension filters</li>
+<li>Date filters</li>
+<li>Data source filters</li>
+</ul>
+<h3>Step 3 — Check joins/relationships</h3>
+<p>Incorrect relationships can duplicate or remove records.</p>
+<h3>Step 4 — Check grain</h3>
+<p>Ask:</p>
+<blockquote>
+<p>What does one row represent in each dataset?</p>
+</blockquote>
+<h3>Step 5 — Validate the dbt model</h3>
+<p>Run SQL directly against Snowflake.</p>
+<h3>Step 6 — Compare row counts</h3>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">SELECT COUNT(*)
+FROM model;
+</code></pre></div>
+<h3>Step 7 — Check duplicates</h3>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">SELECT
+    order_id,
+    COUNT(*)
+FROM model
+GROUP BY order_id
+HAVING COUNT(*) &gt; 1;
+</code></pre></div>
+<h3>Step 8 — Trace backwards</h3>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Tableau
+   ↓
+Mart
+   ↓
+Intermediate
+   ↓
+Staging
+   ↓
+Raw
+</code></pre></div>
+<p>This approach is much better than randomly changing Tableau calculations.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="debug" data-num="41" id="q41">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">41</span>
+        <span class="qa-title">How would you handle duplicate records?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>First, I would understand <strong>why the duplicates exist</strong>.</p>
+<p>I wouldn't automatically use <code>DISTINCT</code>.</p>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">SELECT *
+FROM orders
+</code></pre></div>
+<p>If duplicates exist, possible causes include:</p>
+<ul>
+<li>Duplicate source records</li>
+<li>Many-to-many joins</li>
+<li>Incorrect join condition</li>
+<li>Multiple versions of a record</li>
+<li>Incremental loading issue</li>
+</ul>
+<p>If the business definition says one record should exist per <code>order_id</code>, I might use:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">ROW_NUMBER() OVER (
+    PARTITION BY order_id
+    ORDER BY updated_at DESC
+)
+</code></pre></div>
+<p>Then retain:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">row_number = 1
+</code></pre></div>
+<p>But the correct solution depends on the reason for duplication.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="debug" data-num="42" id="q42">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">42</span>
+        <span class="qa-title">Why shouldn't we blindly use DISTINCT?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Because <code>DISTINCT</code> can hide a data problem.</p>
+<p>Suppose:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Order ID | Amount
+1001     | 1000
+1001     | 1200
+</code></pre></div>
+<p>These are not exact duplicates.</p>
+<p><code>DISTINCT</code> won't solve the underlying issue.</p>
+<p>We need to determine which record is correct.</p>
+<p>A better approach might be:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">ROW_NUMBER() OVER (
+    PARTITION BY order_id
+    ORDER BY updated_at DESC
+)
+</code></pre></div>
+<p>and select the latest record.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="debug" data-num="43" id="q43">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">43</span>
+        <span class="qa-title">What is a many-to-many join problem?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Suppose:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Sales
+Rep A → 10 orders
+
+Targets
+Rep A → 3 monthly target records
+</code></pre></div>
+<p>If we join incorrectly:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">10 sales rows
+×
+3 target rows
+</code></pre></div>
+<p>we can produce:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">30 rows
+</code></pre></div>
+<p>instead of 10.</p>
+<p>This causes inflated measures.</p>
+<p>This is why <strong>grain and cardinality must be understood before joining datasets.</strong></p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="debug" data-num="45" id="q45">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">45</span>
+        <span class="qa-title">What is data lineage?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Data lineage describes where data comes from and how it flows through transformations.</p>
+<p>Example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Salesforce
+    ↓
+Fivetran
+    ↓
+raw_opportunity
+    ↓
+stg_opportunity
+    ↓
+int_opportunity
+    ↓
+fct_opportunity
+    ↓
+Tableau
+</code></pre></div>
+<p>Lineage helps with:</p>
+<ul>
+<li>Troubleshooting</li>
+<li>Impact analysis</li>
+<li>Documentation</li>
+<li>Governance</li>
+<li>Understanding dependencies</li>
+</ul>
+<p>dbt can automatically provide model-level lineage.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="debug" data-num="51" id="q51">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">51</span>
+        <span class="qa-title">What happens when a dbt model fails?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>I would first identify:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Which model failed?
+        ↓
+What error occurred?
+        ↓
+Is it SQL?
+        ↓
+Is it source data?
+        ↓
+Is it dependency?
+        ↓
+Is it permissions?
+        ↓
+Is it warehouse/resource related?
+</code></pre></div>
+<p>For example, if:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">stg_orders
+</code></pre></div>
+<p>fails, downstream models such as:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">int_orders
+fct_sales
+</code></pre></div>
+<p>may also fail because of dependencies.</p>
+<p>I would inspect the dbt logs and error message, reproduce the issue where possible, fix the root cause, and rerun the relevant models/tests.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="debug" data-num="62" id="q62">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">62</span>
+        <span class="qa-title">What would you do if a business user says the dashboard is wrong?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>I would avoid immediately assuming Tableau is the problem.</p>
+<p>I would trace the data flow:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Dashboard
+   ↓
+Tableau calculation
+   ↓
+Data source
+   ↓
+dbt mart
+   ↓
+Intermediate model
+   ↓
+Staging model
+   ↓
+Raw source
+</code></pre></div>
+<p>At each stage I would compare:</p>
+<ul>
+<li>Row count</li>
+<li>Aggregation</li>
+<li>Filters</li>
+<li>Grain</li>
+<li>Duplicates</li>
+<li>Join behavior</li>
+<li>Business logic</li>
+</ul>
+<p>The goal is to identify the <strong>first point where the number becomes incorrect</strong>.</p>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-semantic" data-cat="semantic">
+    <div class="cat-heading" style="--accent:#D9698B">
+      <h2>Semantic Layer & BI</h2>
+      <p>Metrics, dimensions, and the Tableau handoff</p>
+    </div>
+    
+    <article class="qa" data-cat="semantic" data-num="55" id="q55">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">55</span>
+        <span class="qa-title">What is the difference between a metric and a dimension?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A <strong>metric/measure</strong> is something we calculate or aggregate.</p>
+<p>Examples:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Revenue
+Orders
+Profit
+Quantity
+</code></pre></div>
+<p>A <strong>dimension</strong> describes how we slice the metric.</p>
+<p>Examples:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Region
+Product
+Customer
+Sales Rep
+Month
+</code></pre></div>
+<p>For example:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Revenue by Sales Rep
+</code></pre></div>
+<p>Here:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Revenue = measure
+Sales Rep = dimension
+</code></pre></div>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="semantic" data-num="56" id="q56">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">56</span>
+        <span class="qa-title">What is a semantic layer?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A semantic layer defines business metrics and relationships in a consistent way so different consumers use the same definitions.</p>
+<p>For example:</p>
+<p>Instead of every analyst defining:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Revenue
+</code></pre></div>
+<p>differently, the organization can define one trusted metric.</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Revenue =
+SUM(order_amount)
+WHERE order_status = 'Completed'
+</code></pre></div>
+<p>This reduces metric inconsistency across dashboards and teams.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="semantic" data-num="57" id="q57">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">57</span>
+        <span class="qa-title">How does Tableau fit into Analytics Engineering?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>Tableau is generally the <strong>consumption/BI layer</strong>.</p>
+<p>The Analytics Engineer should ideally provide Tableau with clean, trusted models.</p>
+<p>Instead of putting complex business logic everywhere inside Tableau:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Raw data
+   ↓
+Tableau
+   ↓
+50 calculations
+</code></pre></div>
+<p>we can move reusable business logic upstream:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Raw data
+   ↓
+Snowflake
+   ↓
+dbt
+   ↓
+fct_sales
+   ↓
+Tableau
+</code></pre></div>
+<p>This gives us:</p>
+<ul>
+<li>Reusable logic</li>
+<li>Better governance</li>
+<li>Easier testing</li>
+<li>Better consistency</li>
+<li>Simpler dashboards</li>
+</ul>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-sql" data-cat="sql">
+    <div class="cat-heading" style="--accent:#B478C9">
+      <h2>SQL Practice</h2>
+      <p>Window functions and classic query patterns</p>
+    </div>
+    
+    <article class="qa" data-cat="sql" data-num="58" id="q58">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">58</span>
+        <span class="qa-title">What SQL topics should an Analytics Engineer know?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>At minimum:</p>
+<h3>Basic SQL</h3>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">SELECT
+WHERE
+GROUP BY
+HAVING
+ORDER BY
+</code></pre></div>
+<h3>Joins</h3>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">INNER
+LEFT
+RIGHT
+FULL
+</code></pre></div>
+<h3>Intermediate</h3>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">CASE
+COALESCE
+CTEs
+Subqueries
+UNION
+UNION ALL
+</code></pre></div>
+<h3>Advanced</h3>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">ROW_NUMBER
+RANK
+DENSE_RANK
+LAG
+LEAD
+SUM OVER
+AVG OVER
+</code></pre></div>
+<h3>Dates</h3>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">DATE_TRUNC
+DATEADD
+DATEDIFF
+</code></pre></div>
+<h3>Analytics problems</h3>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Deduplication
+Top N
+Running totals
+Rolling averages
+MoM
+YoY
+Retention
+Latest record
+First/last event
+</code></pre></div>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="sql" data-num="59" id="q59">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">59</span>
+        <span class="qa-title">SQL Interview Example — Find the latest order for every customer</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">WITH ranked_orders AS (
+
+    SELECT
+        customer_id,
+        order_id,
+        order_date,
+        ROW_NUMBER() OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date DESC
+        ) AS rn
+
+    FROM orders
+
+)
+
+SELECT
+    customer_id,
+    order_id,
+    order_date
+FROM ranked_orders
+WHERE rn = 1;
+</code></pre></div>
+<h3>Explanation</h3>
+<p>We partition by customer:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">PARTITION BY customer_id
+</code></pre></div>
+<p>Then rank each customer's orders from newest to oldest:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">ORDER BY order_date DESC
+</code></pre></div>
+<p>Finally:</p>
+<div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">WHERE rn = 1
+</code></pre></div>
+<p>returns the latest order.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="sql" data-num="60" id="q60">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">60</span>
+        <span class="qa-title">SQL Interview Example — Running revenue</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">SELECT
+    order_date,
+    revenue,
+
+    SUM(revenue) OVER (
+        ORDER BY order_date
+    ) AS running_revenue
+
+FROM sales;
+</code></pre></div>
+<p>The window function calculates cumulative revenue without collapsing the individual rows.</p>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="sql" data-num="61" id="q61">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">61</span>
+        <span class="qa-title">SQL Interview Example — Top 3 sales reps per region</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <div class="code-block"><div class="code-label">SQL</div><pre><code class="language-sql">WITH ranked_reps AS (
+
+    SELECT
+        region,
+        sales_rep,
+        revenue,
+
+        RANK() OVER (
+            PARTITION BY region
+            ORDER BY revenue DESC
+        ) AS rnk
+
+    FROM sales_rep_revenue
+
+)
+
+SELECT *
+FROM ranked_reps
+WHERE rnk &lt;= 3;
+</code></pre></div>
+<p>This is a classic window-function problem.</p>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="cat-section" id="cat-strategy" data-cat="strategy">
+    <div class="cat-heading" style="--accent:#8C8FE0">
+      <h2>Interview Strategy</h2>
+      <p>Priorities, mental models, and the end-to-end pitch</p>
+    </div>
+    
+    <article class="qa" data-cat="strategy" data-num="50" id="q50">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">50</span>
+        <span class="qa-title">Explain the complete project architecture.</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <h3>Strong interview answer</h3>
+<blockquote>
+<p>"In a typical project, operational data comes from sources such as Salesforce. A tool like Fivetran extracts and loads that data into Snowflake. In Snowflake, the raw data is stored in a raw layer. I then use dbt to build staging models for standardization, intermediate models for more complex transformations, and fact and dimension models for analytics. I add dbt tests such as not-null, unique, accepted-values, and relationship tests to ensure data quality. Git is used for version control and CI/CD can run dbt tests before deployment. Airflow can orchestrate the overall workflow, and Tableau can consume the final analytics-ready models."</p>
+</blockquote>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="strategy" data-num="64" id="q64">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">64</span>
+        <span class="qa-title">What makes a good Analytics Engineer?</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>A strong Analytics Engineer doesn't just know SQL.</p>
+<p>They understand the entire data lifecycle:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">Source
+  ↓
+Ingestion
+  ↓
+Warehouse
+  ↓
+Transformation
+  ↓
+Modeling
+  ↓
+Testing
+  ↓
+Documentation
+  ↓
+BI
+  ↓
+Business
+</code></pre></div>
+<p>They also understand:</p>
+<ul>
+<li>Data quality</li>
+<li>Grain</li>
+<li>Business definitions</li>
+<li>Maintainability</li>
+<li>Performance</li>
+<li>Version control</li>
+<li>Deployment</li>
+<li>Debugging</li>
+</ul>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="strategy" data-num="65" id="q65">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">65</span>
+        <span class="qa-title">Your 30-Day Interview Priority</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>For your transition, I would prioritize the topics in this order:</p>
+<h2>Tier 1 — Must Master</h2>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">⭐⭐⭐⭐⭐ SQL
+⭐⭐⭐⭐⭐ Data Modeling
+⭐⭐⭐⭐⭐ dbt
+⭐⭐⭐⭐⭐ Grain &amp; Joins
+⭐⭐⭐⭐⭐ Data Quality
+</code></pre></div>
+<h2>Tier 2 — Strong Understanding</h2>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">⭐⭐⭐⭐ Snowflake
+⭐⭐⭐⭐ Git
+⭐⭐⭐⭐ ELT
+⭐⭐⭐⭐ Analytics Architecture
+</code></pre></div>
+<h2>Tier 3 — Interview-Level Knowledge</h2>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">⭐⭐⭐ Airflow
+⭐⭐⭐ Fivetran
+⭐⭐⭐ CI/CD
+⭐⭐⭐ SCD
+⭐⭐⭐ Incremental Models
+</code></pre></div>
+<h2>Tier 4 — Don't Over-invest Right Now</h2>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">⭐ Spark
+⭐ Kafka
+⭐ Kubernetes
+⭐ Advanced AWS
+⭐ Advanced Python
+</code></pre></div>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="strategy" data-num="66" id="q66">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">66</span>
+        <span class="qa-title">The Mental Model You Should Memorize</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>When you see a modern Analytics Engineering stack, think:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">                    SOURCES
+                       │
+             ┌─────────┴─────────┐
+             │                   │
+         Salesforce             APIs
+             │                   │
+             └─────────┬─────────┘
+                       ↓
+                  FIVETRAN
+                 &quot;Move data&quot;
+                       ↓
+                   SNOWFLAKE
+              &quot;Store + Compute&quot;
+                       ↓
+                     DBT
+             &quot;Transform + Model&quot;
+                       ↓
+          ┌────────────┼────────────┐
+          ↓            ↓            ↓
+       Staging    Intermediate     Marts
+                                     ↓
+                              Trusted Dataset
+                                     ↓
+                                  TABLEAU
+                               &quot;Visualize&quot;
+</code></pre></div>
+<p>And:</p>
+<div class="code-block"><div class="code-label">DIAGRAM</div><pre><code class="language-text">AIRFLOW
+&quot;Orchestrate the workflow&quot;
+</code></pre></div>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="strategy" data-num="67" id="q67">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">67</span>
+        <span class="qa-title">The One-Sentence Version of Each Tool</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>If an interviewer asks you to explain the stack quickly:</p>
+<h3>Snowflake</h3>
+<blockquote>
+<p><strong>"Cloud data warehouse/platform where we store and process analytical data."</strong></p>
+</blockquote>
+<h3>Fivetran</h3>
+<blockquote>
+<p><strong>"Managed data ingestion tool that moves data from operational sources into the warehouse."</strong></p>
+</blockquote>
+<h3>dbt</h3>
+<blockquote>
+<p><strong>"Transformation and analytics engineering framework that lets us build, test, document, and manage SQL models inside the warehouse."</strong></p>
+</blockquote>
+<h3>Airflow</h3>
+<blockquote>
+<p><strong>"Workflow orchestration platform used to schedule and coordinate data processes and their dependencies."</strong></p>
+</blockquote>
+<h3>Git</h3>
+<blockquote>
+<p><strong>"Version control system used to manage and collaborate on transformation code."</strong></p>
+</blockquote>
+<h3>Tableau</h3>
+<blockquote>
+<p><strong>"BI and visualization platform used to consume trusted analytical datasets and deliver insights to business users."</strong></p>
+</blockquote>
+      </div></div>
+    </article>
+    <article class="qa" data-cat="strategy" data-num="68" id="q68">
+      <button class="qa-head" aria-expanded="false">
+        <span class="qa-num">68</span>
+        <span class="qa-title">The Ideal End-to-End Interview Answer</span>
+        <span class="qa-check" title="Mark reviewed"></span>
+        <span class="qa-chevron" aria-hidden="true"></span>
+      </button>
+      <div class="qa-body"><div class="qa-content">
+        <p>If the interviewer asks:</p>
+<blockquote>
+<p><strong>"Walk me through how you would build an analytics pipeline."</strong></p>
+</blockquote>
+<p>A strong answer would be:</p>
+<blockquote>
+<p>"I would first identify the source systems and understand the business requirements and grain of the required datasets. Data could be extracted from systems such as Salesforce using a managed ingestion tool like Fivetran and loaded into Snowflake. I would then create dbt staging models to clean and standardize the raw data, followed by intermediate models for reusable transformation logic. Finally, I would create fact and dimension models at clearly defined grains for analytics consumption. I would add dbt tests for uniqueness, nullability, accepted values, and relationships, and document the models and lineage. Git would be used for version control and CI/CD could validate changes before deployment. Airflow could orchestrate ingestion, dbt runs, tests, and downstream processes. Tableau would then consume the curated marts rather than relying on raw source data."</p>
+</blockquote>
+<p>That is the kind of answer I want you to eventually deliver <strong>without memorizing it word-for-word</strong>.</p>
+      </div></div>
+    </article>
+  </section>
+
+      <div class="closing">
+        <h2>The five questions to ask yourself on any AE problem</h2>
+        <p class="lede">Whatever the interview question, run it through this framework instead of reciting tool names — it's what separates someone who has memorized dbt commands from someone who thinks like an Analytics Engineer.</p>
+        <div class="steps5">
+          <div class="step5"><div class="n">01</div><h4>Source</h4><p>Where did the data come from?</p></div>
+          <div class="step5"><div class="n">02</div><h4>Grain</h4><p>What does one row represent?</p></div>
+          <div class="step5"><div class="n">03</div><h4>Transformation</h4><p>What business logic is applied?</p></div>
+          <div class="step5"><div class="n">04</div><h4>Quality</h4><p>How do we know it's correct?</p></div>
+          <div class="step5"><div class="n">05</div><h4>Consumption</h4><p>Who or what uses the final data?</p></div>
+        </div>
+      </div>
+
+      <div class="no-results" id="noResults">No questions match your search — try a different term or clear the filter.</div>
+
+      <footer class="pagefoot">
+        <span>Analytics Engineer Interview Field Guide · 68 questions</span>
+        <span>Built for a Tableau → Data Engineering transition</span>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  const qaCards = Array.from(document.querySelectorAll('.qa'));
+  const sections = Array.from(document.querySelectorAll('.cat-section'));
+  const navChips = Array.from(document.querySelectorAll('.nav-chip'));
+  const searchInput = document.getElementById('searchInput');
+  const reviewedCountEl = document.getElementById('reviewedCount');
+  const progressFill = document.getElementById('progressFill');
+  const noResults = document.getElementById('noResults');
+  const TOTAL = qaCards.length;
+
+  let activeCat = 'all';
+  let reviewed = new Set();
+
+  // ---- Accordion ----
+  qaCards.forEach(card => {
+    const head = card.querySelector('.qa-head');
+    const check = card.querySelector('.qa-check');
+    head.addEventListener('click', (e) => {
+      if (e.target === check) return; // handled separately
+      const open = card.classList.toggle('open');
+      head.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    check.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const num = card.dataset.num;
+      if (reviewed.has(num)) { reviewed.delete(num); card.classList.remove('reviewed'); }
+      else { reviewed.add(num); card.classList.add('reviewed'); }
+      updateProgress();
+    });
+  });
+
+  function updateProgress(){
+    reviewedCountEl.textContent = reviewed.size;
+    progressFill.style.width = Math.round((reviewed.size / TOTAL) * 100) + '%';
+  }
+
+  // ---- Expand / collapse all ----
+  document.getElementById('expandAllBtn').addEventListener('click', () => {
+    qaCards.forEach(c => { if (!c.classList.contains('hidden')) { c.classList.add('open'); c.querySelector('.qa-head').setAttribute('aria-expanded','true'); } });
+  });
+  document.getElementById('collapseAllBtn').addEventListener('click', () => {
+    qaCards.forEach(c => { c.classList.remove('open'); c.querySelector('.qa-head').setAttribute('aria-expanded','false'); });
+  });
+
+  // ---- Category filter ----
+  navChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      activeCat = chip.dataset.cat;
+      navChips.forEach(c => c.classList.toggle('active', c === chip));
+      applyFilters();
+    });
+  });
+
+  // ---- Search + filter ----
+  searchInput.addEventListener('input', applyFilters);
+
+  function applyFilters(){
+    const q = searchInput.value.trim().toLowerCase();
+    let anyVisible = false;
+
+    sections.forEach(sec => {
+      let sectionHasVisible = false;
+      const catMatch = activeCat === 'all' || sec.dataset.cat === activeCat;
+      sec.querySelectorAll('.qa').forEach(card => {
+        const text = card.innerText.toLowerCase();
+        const matchesSearch = q === '' || text.includes(q);
+        const visible = catMatch && matchesSearch;
+        card.classList.toggle('hidden', !visible);
+        if (visible) sectionHasVisible = true;
+      });
+      sec.classList.toggle('hidden', !sectionHasVisible);
+      if (sectionHasVisible) anyVisible = true;
+    });
+
+    noResults.style.display = anyVisible ? 'none' : 'block';
+  }
+
+  updateProgress();
+})();
+</script>
+</body>
+</html>
