@@ -26,13 +26,13 @@ Built as prep material for a Tableau Developer → Analytics Engineer / Data Eng
 
 | File | Description |
 |---|---|
-| `Analytics_Engineer_Interview_Guide.pdf` | Print/PDF version of the full guide |
-| `Analytics_Engineer_Interview_Field_Guide.html` | Interactive version — searchable, filterable by category, with a review-progress tracker |
-| `Analytics_Engineer___Interview_Questions___Answers.md` | Plain Markdown version — readable directly on GitHub, easy to diff/edit |
+| [`Analytics Engineer Interview Guide.pdf`](Analytics%20Engineer%20Interview%20Guide.pdf) | Print/PDF version of the full guide |
+| [`Analytics_Engineer_Interview_Field_Guide.html`](Analytics_Engineer_Interview_Field_Guide.html) | Interactive version — searchable, filterable by category, with a review-progress tracker |
+| [`Analytics Engineer — Interview Questions & Answers.md`](Analytics%20Engineer%20%E2%80%94%20Interview%20Questions%20%26%20Answers.md) | Plain Markdown version — readable directly on GitHub, easy to diff/edit |
 
 ## Using the interactive guide
 
-Open `Analytics_Engineer_Interview_Field_Guide.html` in any browser (or via GitHub Pages):
+Open `Analytics_Engineer_Interview_Field_Guide.html` in any browser (or via GitHub Pages), or view it rendered directly on GitHub via the [file link above](Analytics_Engineer_Interview_Field_Guide.html):
 
 - **Search** across all 68 questions
 - **Filter by category**
