@@ -27,7 +27,7 @@ Built as prep material for a Tableau Developer → Analytics Engineer / Data Eng
 | File | Description |
 |---|---|
 | [`Analytics Engineer Interview Guide.pdf`](Analytics%20Engineer%20Interview%20Guide.pdf) | Print/PDF version of the full guide |
-| [`Analytics_Engineer_Interview_Field_Guide.html`](Analytics_Engineer_Interview_Field_Guide.html) | Interactive version — searchable, filterable by category, with a review-progress tracker |
+| [`Analytics_Engineer_Interview_Field_Guide.html`](https://github.com/Jaideepgupta/dbt_interview/blob/main/index.html) | Interactive version — searchable, filterable by category, with a review-progress tracker |
 | [`Analytics Engineer — Interview Questions & Answers.md`](Analytics%20Engineer%20%E2%80%94%20Interview%20Questions%20%26%20Answers.md) | Plain Markdown version — readable directly on GitHub, easy to diff/edit |
 
 ## Using the interactive guide
