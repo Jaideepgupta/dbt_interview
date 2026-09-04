@@ -4,7 +4,7 @@ A practical interview preparation guide for the **Analytics Engineer** role, cov
 
 Built as prep material for a Tableau Developer → Analytics Engineer / Data Engineering transition, but useful for anyone interviewing for an Analytics Engineer position.
 
-**🔗 Live interactive guide: [jaideepgupta.github.io/dbt_interview](https://jaideepgupta.github.io/dbt_interview/)**
+**🔗 [Open the live interactive guide](https://jaideepgupta.github.io/dbt_interview/)**
 
 ## What's inside
 
@@ -28,13 +28,11 @@ Built as prep material for a Tableau Developer → Analytics Engineer / Data Eng
 
 | File | Description |
 |---|---|
+| `index.html` | Interactive version — searchable, filterable by category, with a review-progress tracker. See the live link above. |
 | [`Analytics Engineer Interview Guide.pdf`](Analytics%20Engineer%20Interview%20Guide.pdf) | Print/PDF version of the full guide |
-| [`index.html`](https://jaideepgupta.github.io/dbt_interview/) | Interactive version — searchable, filterable by category, with a review-progress tracker (live at GitHub Pages) |
 | [`Analytics Engineer — Interview Questions & Answers.md`](Analytics%20Engineer%20%E2%80%94%20Interview%20Questions%20%26%20Answers.md) | Plain Markdown version — readable directly on GitHub, easy to diff/edit |
 
 ## Using the interactive guide
-
-Open the [live version](https://jaideepgupta.github.io/dbt_interview/) in any browser, or run `index.html` locally:
 
 - **Search** across all 68 questions
 - **Filter by category**
