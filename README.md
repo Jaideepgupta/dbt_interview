@@ -4,6 +4,8 @@ A practical interview preparation guide for the **Analytics Engineer** role, cov
 
 Built as prep material for a Tableau Developer → Analytics Engineer / Data Engineering transition, but useful for anyone interviewing for an Analytics Engineer position.
 
+**🔗 Live interactive guide: [jaideepgupta.github.io/dbt_interview](https://jaideepgupta.github.io/dbt_interview/)**
+
 ## What's inside
 
 - **68 interview questions and answers**, organized by topic, each with a plain-language explanation, a diagram or example where useful, and a ready-to-say "interview version" of the answer.
@@ -27,12 +29,12 @@ Built as prep material for a Tableau Developer → Analytics Engineer / Data Eng
 | File | Description |
 |---|---|
 | [`Analytics Engineer Interview Guide.pdf`](Analytics%20Engineer%20Interview%20Guide.pdf) | Print/PDF version of the full guide |
-| [`Analytics_Engineer_Interview_Field_Guide.html`](https://github.com/Jaideepgupta/dbt_interview/blob/main/index.html) | Interactive version — searchable, filterable by category, with a review-progress tracker |
+| [`index.html`](https://jaideepgupta.github.io/dbt_interview/) | Interactive version — searchable, filterable by category, with a review-progress tracker (live at GitHub Pages) |
 | [`Analytics Engineer — Interview Questions & Answers.md`](Analytics%20Engineer%20%E2%80%94%20Interview%20Questions%20%26%20Answers.md) | Plain Markdown version — readable directly on GitHub, easy to diff/edit |
 
 ## Using the interactive guide
 
-Open `Analytics_Engineer_Interview_Field_Guide.html` in any browser (or via GitHub Pages), or view it rendered directly on GitHub via the [file link above](Analytics_Engineer_Interview_Field_Guide.html):
+Open the [live version](https://jaideepgupta.github.io/dbt_interview/) in any browser, or run `index.html` locally:
 
 - **Search** across all 68 questions
 - **Filter by category**
@@ -44,4 +46,5 @@ Open `Analytics_Engineer_Interview_Field_Guide.html` in any browser (or via GitH
 For each question, try answering out loud in your own words *before* reading the given answer. The "interview version" callouts are meant to be internalized as talking points, not memorized verbatim — the goal is to think in terms of source → grain → transformation → quality → consumption, not to recite tool names.
 
 ---
+
 *Personal interview prep notes — not affiliated with Snowflake, dbt Labs, Fivetran, Airflow, or Tableau.*
